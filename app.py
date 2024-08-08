@@ -15,6 +15,7 @@ nba_info = pd.read_csv('https://raw.githubusercontent.com/DevlinBridges/dash-her
 
 nba_final_cleaned_grouped = nba_info.groupby('fips').agg({
     'Team': lambda x: ', '.join(x),
+    'Championships': 'sum',
     'Points': 'sum',
     'MVPs': 'sum',
     'Finals MVPs': 'sum',
@@ -64,7 +65,7 @@ def totalpoints(col):
     fig.update(layout=dict(title=dict(x=0.5)))
     return fig
 
-def boxplot(col):
+def barchart(col):
     fig = px.bar(nba_info,
                  x='State',
                  y='Percentage of Points Scored',
@@ -81,9 +82,10 @@ def scatter(col1, col2):
     fig = px.scatter(nba_info,
                      x='Championships',
                      y=col1,
+                     trendline='ols',
                      color=col2,
                      hover_data=['Leading Scorer','MVPs','Finals MVPs','Team'],
-                     title='All-NBA First Team Selections Against Championships Won',
+                     title='# of Championships Against...',
                      height=600, width=600)
     fig.update_layout(showlegend=False)
     return fig
@@ -91,12 +93,13 @@ def scatter(col1, col2):
 def scatter2(col1, col2):
     fig = px.scatter(nba_info,
                      x='Yrs Existed',
-                     y='All-NBA First Team Selections',
-                     color=col1,
+                     y=col1,
+                     trendline='ols',
+                     color='Team',
                      color_continuous_scale='Turbo',
                      size=col2,
                      hover_data=['Leading Scorer','MVPs','Finals MVPs','Team'],
-                     title='All-NBA First Team Selections Against Age of Team',
+                     title='Age of Team Against...',
                      height=800, width=800,
                      size_max=15)
     fig.update_layout(showlegend=False)
@@ -130,8 +133,7 @@ app.layout = html.Div([
         id='visualization-dropdown',
         options=[
             {'label': 'County Map', 'value': 'countymap'},
-            {'label': 'Total Points', 'value': 'totalpoints'},
-            {'label': 'Box Plot', 'value': 'boxplot'},
+            {'label': 'Barchart', 'value': 'barchart'},
             {'label': 'Scatter Plot 1', 'value': 'scatter'},
             {'label': 'Scatter Plot 2', 'value': 'scatter2'},
             {'label': 'Table', 'value': 'table'}
@@ -141,9 +143,6 @@ app.layout = html.Div([
 
     dcc.Dropdown(
         id='variable-dropdown',
-        options=[
-            {'label': col, 'value': col} for col in nba_info.columns
-        ],
         value='Points',  # Default value
         multi=False
     ),
@@ -152,18 +151,35 @@ app.layout = html.Div([
 ])
 
 @app.callback(
+    Output('variable-dropdown', 'options'),
+    Input('visualization-dropdown', 'value')
+)
+
+def update_variable_options(selected_visualization):
+    if selected_visualization == 'countymap':
+        allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
+    elif selected_visualization == 'barchart':
+        allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
+    elif selected_visualization == 'scatter':
+        allowed_columns = ['Team', 'Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+    elif selected_visualization == 'scatter2':
+        allowed_columns = ['Team', 'Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+    else:
+        allowed_columns = []
+    
+    # Return the new options for the variable-dropdown
+    return [{'label': col, 'value': col} for col in allowed_columns]
+
+@app.callback(
     Output('map', 'figure'),
     [Input('visualization-dropdown', 'value'),
      Input('variable-dropdown', 'value')]
 )
-
 def update_figure(selected_visualization, selected_variable):
     if selected_visualization == 'countymap':
         return countymap(selected_variable)
-    elif selected_visualization == 'totalpoints':
-        return totalpoints(selected_variable)
-    elif selected_visualization == 'boxplot':
-        return boxplot(selected_variable)
+    elif selected_visualization == 'barchart':
+        return barchart(selected_variable)
     elif selected_visualization == 'scatter':
         return scatter(selected_variable, selected_variable)
     elif selected_visualization == 'scatter2':
@@ -174,4 +190,4 @@ def update_figure(selected_visualization, selected_variable):
         return countymap(selected_variable)  # Default to county map if something goes wrong
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8055)  # Changed port to 8051 to avoid conflict
+    app.run_server(debug=True, port=8057)  # Changed port to 8051 to avoid conflict
