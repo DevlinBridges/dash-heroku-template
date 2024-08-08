@@ -190,4 +190,4 @@ def update_figure(selected_visualization, selected_variable):
         return countymap(selected_variable)  # Default to county map if something goes wrong
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8057)  # Changed port to 8051 to avoid conflict
+    app.run_server(debug=True)  # Changed port to 8051 to avoid conflict
