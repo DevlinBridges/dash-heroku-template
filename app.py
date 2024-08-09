@@ -73,7 +73,7 @@ def barchart(col):
                  text='text',
                  labels={'State':'State', 'Percentage of Points Scored':'Percent'},
                  title='Percentage of Total Points Scored by State in NBA History',
-                 hover_data=['Championships', 'Leading Scorer', 'All-NBA First Team Selections', 'MVPs', 'Finals MVPs'])
+                 hover_data=['Team', 'Championships', 'Leading Scorer', 'All-NBA First Team Selections', 'MVPs', 'Finals MVPs'])
     fig.update_traces(marker=dict(line=dict(width=2)))
     fig.update(layout=dict(title=dict(x=0.5)))
     return fig
