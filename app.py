@@ -124,6 +124,8 @@ def table(col1):
 
 app = dash.Dash(__name__)
 
+server = app.server  # Expose the server variable for deployment
+
 app.layout = html.Div([
     html.H1("NBA Dashboard", style={'text-align': 'center'}),
 
@@ -154,7 +156,6 @@ app.layout = html.Div([
     Output('variable-dropdown', 'options'),
     Input('visualization-dropdown', 'value')
 )
-
 def update_variable_options(selected_visualization):
     if selected_visualization == 'countymap':
         allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
@@ -190,4 +191,4 @@ def update_figure(selected_visualization, selected_variable):
         return countymap(selected_variable)  # Default to county map if something goes wrong
 
 if __name__ == '__main__':
-    app.run_server(debug=True)  # Changed port to 8051 to avoid conflict
+    app.run_server(debug=True)
