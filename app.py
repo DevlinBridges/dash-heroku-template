@@ -79,17 +79,14 @@ def barchart(col):
     return fig
 
 def scatter(col1, col2):
-        fig = px.scatter(nba_info,
+    fig = px.scatter(nba_info,
                      x='Championships',
                      y=col1,
                      trendline='ols',
-                     color='Team',
-                     color_continuous_scale='Turbo',
-                     size=col2,
+                     color=col2,
                      hover_data=['Leading Scorer','MVPs','Finals MVPs','Team'],
-                     title='Number of Championships Against...',
-                     height=800, width=800,
-                     size_max=15)
+                     title='# of Championships Against...',
+                     height=600, width=600)
     fig.update_layout(showlegend=False)
     return fig
 
