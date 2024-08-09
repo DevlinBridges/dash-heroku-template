@@ -164,7 +164,7 @@ def update_variable_options(selected_visualization):
     elif selected_visualization == 'scatter':
         allowed_columns = ['Team', 'Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
     elif selected_visualization == 'scatter2':
-        allowed_columns = ['Team', 'Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
     else:
         allowed_columns = []
     
