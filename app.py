@@ -84,9 +84,9 @@ def scatter(col1, col2):
                      y=col1,
                      trendline='ols',
                      color=col2,
-                     hover_data=['Leading Scorer','MVPs','Finals MVPs','Team'],
+                     hover_data=['Team','Leading Scorer','MVPs','Finals MVPs'],
                      title='# of Championships Against...',
-                     height=600, width=600)
+                     height=800, width=800)
     fig.update_layout(showlegend=False)
     return fig
 
@@ -98,7 +98,7 @@ def scatter2(col1, col2):
                      color='Team',
                      color_continuous_scale='Turbo',
                      size=col2,
-                     hover_data=['Leading Scorer','MVPs','Finals MVPs','Team'],
+                     hover_data=['Team','Leading Scorer','MVPs','Finals MVPs'],
                      title='Age of Team Against...',
                      height=800, width=800,
                      size_max=15)
