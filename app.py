@@ -13,7 +13,21 @@ counties = json.loads(response.text)
 
 nba_info = pd.read_csv('https://raw.githubusercontent.com/DevlinBridges/dash-heroku-template/master/nba_info.csv')
 
-nba_final_cleaned_grouped = nba_info.groupby('fips').agg({
+url_state = 'https://github.com/DevlinBridges/dash-heroku-template/blob/master/states_geojson.json?raw=true'
+response = requests.get(url_state)
+states = json.loads(response.text)
+
+nba_final_cleaned_grouped = nba_info.groupby(['fips']).agg({
+    'Team': lambda x: ', '.join(x),
+    'Championships': 'sum',
+    'Points': 'sum',
+    'MVPs': 'sum',
+    'Finals MVPs': 'sum',
+    'All-NBA First Team Selections': 'sum',
+    'Leading Scorer': 'sum'
+}).reset_index()
+
+nba_states = nba_info.groupby(['State FIPS Code']).agg({
     'Team': lambda x: ', '.join(x),
     'Championships': 'sum',
     'Points': 'sum',
@@ -49,8 +63,30 @@ def countymap(col):
         color_continuous_scale='reds',
         hover_name='Team',
         hover_data=['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Leading Scorer'],
-        title='NBA Teams'
+        title='NBA Teams by County'
     )
+    
+    fig.update_geos(fitbounds='locations', visible=True)
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+    
+    return fig
+
+def statemap(col):
+    nba_states['State FIPS Code'] = nba_states['State FIPS Code'].astype(str).str.replace('.0', '', regex=False)
+    nba_states['State FIPS Code'] = nba_states['State FIPS Code'].str.zfill(2)
+    
+    fig = px.choropleth(nba_states,
+            geojson=states,
+            scope = 'usa',
+            locations='State FIPS Code',
+            featureidkey='properties.STATE',
+            color=col,
+            color_continuous_scale='reds',
+            hover_name='Team',
+            hover_data=['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Leading Scorer'],
+            title='NBA Teams by State'
+    )
+
     
     fig.update_geos(fitbounds='locations', visible=True)
     fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
@@ -140,6 +176,7 @@ app.layout = html.Div([
         id='visualization-dropdown',
         options=[
             {'label': 'County Map', 'value': 'countymap'},
+            {'label': 'State Map', 'value': 'statemap'},
             {'label': 'Barchart', 'value': 'barchart'},
             {'label': 'Scatter Plot 1', 'value': 'scatter'},
             {'label': 'Scatter Plot 2', 'value': 'scatter2'},
@@ -170,7 +207,7 @@ app.layout = html.Div([
     Input('visualization-dropdown', 'value')
 )
 def update_variable_options(selected_visualization):
-    if selected_visualization == 'countymap':
+    if selected_visualization in ['countymap', 'statemap']:
         allowed_columns = ['Championships', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections']
     elif selected_visualization == 'barchart':
         allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
@@ -193,6 +230,8 @@ def update_variable_options(selected_visualization):
 def update_figure(selected_visualization, col1, col2):
     if selected_visualization == 'countymap':
         return countymap(col1)
+    elif selected_visualization == 'statemap':
+        return statemap(col1)
     elif selected_visualization == 'barchart':
         return barchart(col1)
     elif selected_visualization == 'scatter':
