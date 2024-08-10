@@ -1,6 +1,7 @@
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
@@ -49,6 +50,7 @@ I did my best to clean the data with what I saw as glaring mistakes (the Pistons
 I hope you have fun looking at generic measures that you could've just as easily have Googled.
 
 Love and Basketball,
+
 Devlin
 '''
 
@@ -159,48 +161,78 @@ def table(col1):
     )
     return fig
 
-app = dash.Dash(__name__)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 
-server = app.server  # Expose the server variable for deployment
+server = app.server  ## Expose server variable for deployment
 
-app.layout = html.Div([
-    html.H1("NBA Dashboard", style={'text-align': 'center'}),
+## Define app layout
+app.layout = dbc.Container([
+    html.Link(href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap", rel="stylesheet"),
+    
+    dbc.Row([
+        dbc.Col(html.H1("NBA Dashboard", style={
+            'text-align': 'center', 
+            'font-family': 'Bebas Neue, sans-serif',
+            'font-weight': 'bold',
+            'color': '#1a1a1a',
+            'background-color': '#f0f0f0',
+            'padding': '20px',
+            'border-radius': '10px',
+            'box-shadow': '2px 2px 5px rgba(0, 0, 0, 0.3)',
+            'letter-spacing': '1px',
+            'font-size': '60px'
+        }), width=12)
+    ], justify='center', className="mb-4"),
 
-    html.Img(src='https://upload.wikimedia.org/wikipedia/commons/6/6b/DeShawn_Stevenson_2.jpg', 
-             style={'height': '400px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+    dbc.Row([
+        dbc.Col(html.Img(src='https://upload.wikimedia.org/wikipedia/commons/6/6b/DeShawn_Stevenson_2.jpg', 
+                         style={'height': '400px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}), width=12)
+    ], justify='center', className="mb-4"),
 
-    dcc.Markdown(markdown_text),
+    dbc.Row([
+        dbc.Col(dcc.Markdown(markdown_text), width=12)
+    ], className="mb-4"),
 
-    html.P("Select the type of visualization:", style={'font-weight': 'bold'}),
-    dcc.Dropdown(
-        id='visualization-dropdown',
-        options=[
-            {'label': 'County Map', 'value': 'countymap'},
-            {'label': 'State Map', 'value': 'statemap'},
-            {'label': 'Barchart', 'value': 'barchart'},
-            {'label': 'Scatter Plot 1', 'value': 'scatter'},
-            {'label': 'Scatter Plot 2', 'value': 'scatter2'},
-            {'label': 'Table', 'value': 'table'}
-        ],
-        value='countymap'  # Default value
-    ),
+    dbc.Row([
+        dbc.Col([
+            html.P("Select the type of visualization:", style={'font-weight': 'bold'}),
+            dcc.Dropdown(
+                id='visualization-dropdown',
+                options=[
+                    {'label': 'County Map', 'value': 'countymap'},
+                    {'label': 'State Map', 'value': 'statemap'},
+                    {'label': 'Barchart', 'value': 'barchart'},
+                    {'label': 'Scatter Plot 1', 'value': 'scatter'},
+                    {'label': 'Scatter Plot 2', 'value': 'scatter2'},
+                    {'label': 'Table', 'value': 'table'}
+                ],
+                value='countymap'  ## Default value
+            )
+        ], width=4),
 
-    html.P("Select the first variable (for Scatterplot 1, this controls y-axis; for Scatterplot 2, this controls x-axis):", style={'font-weight': 'bold'}),
-    dcc.Dropdown(
-        id='variable-dropdown',
-        value='Points',  # Default value
-        multi=False
-    ),
+        dbc.Col([
+            html.P("Select the first variable (for Scatterplot 1, this controls y-axis; for Scatterplot 2, this controls x-axis):", style={'font-weight': 'bold'}),
+            dcc.Dropdown(
+                id='variable-dropdown',
+                value='Points',  ## Default value
+                multi=False
+            )
+        ], width=4),
 
-    html.P("Select the first variable (for Scatterplot 1, this controls point size; for Scatterplot 2, this controls y-axis):", style={'font-weight': 'bold'}),
-    dcc.Dropdown(
-        id='variable2-dropdown',  # Second dropdown for col2
-        value='Championships',  # Default value
-        multi=False
-    ),
+        dbc.Col([
+            html.P("Select the first variable (for Scatterplot 1, this controls point size; for Scatterplot 2, this controls y-axis):", style={'font-weight': 'bold'}),
+            dcc.Dropdown(
+                id='variable2-dropdown',  ## Second dropdown for col2
+                value='Championships',  ## Default value
+                multi=False
+            )
+        ], width=4)
+    ], className="mb-4"),
 
-    dcc.Graph(id='map')
-])
+    dbc.Row([
+        dbc.Col(dcc.Graph(id='map'), width=12)
+    ])
+], fluid=True)
 
 @app.callback(
     Output('variable-dropdown', 'options'),
@@ -218,14 +250,13 @@ def update_variable_options(selected_visualization):
     else:
         allowed_columns = []
     
-    # Return the new options for the variable-dropdown
     return [{'label': col, 'value': col} for col in allowed_columns]
 
 @app.callback(
     Output('map', 'figure'),
     [Input('visualization-dropdown', 'value'),
      Input('variable-dropdown', 'value'),
-     Input('variable2-dropdown', 'value')]  # Third argument for second dropdown
+     Input('variable2-dropdown', 'value')]  ## Third argument for second dropdown
 )
 def update_figure(selected_visualization, col1, col2):
     if selected_visualization == 'countymap':
@@ -235,13 +266,13 @@ def update_figure(selected_visualization, col1, col2):
     elif selected_visualization == 'barchart':
         return barchart(col1)
     elif selected_visualization == 'scatter':
-        return scatter(col1, col2)  # Pass both columns
+        return scatter(col1, col2)
     elif selected_visualization == 'scatter2':
-        return scatter2(col1, col2)  # Pass both columns
+        return scatter2(col1, col2)
     elif selected_visualization == 'table':
         return table(col1)
     else:
-        return countymap(col1)  # Default to county map if something goes wrong
+        return countymap(col1)  ## Default to county map
     
 @app.callback(
     Output('variable2-dropdown', 'options'),
@@ -251,9 +282,8 @@ def update_variable2_options(selected_visualization):
     if selected_visualization in ['scatter','scatter2']:
         allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
     else:
-        allowed_columns = []  # Just use an empty list if not scatter or scatter2
+        allowed_columns = []  ## Empty list for non-scatterplot vizes
     
-    # Return the new options for the variable-dropdown
     return [{'label': col, 'value': col} for col in allowed_columns] or [{'label': 'N/A', 'value': 'N/A'}]
     
 if __name__ == '__main__':
