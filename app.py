@@ -23,8 +23,6 @@ nba_final_cleaned_grouped = nba_info.groupby('fips').agg({
     'Leading Scorer': 'sum'
 }).reset_index()
 
-html.Img(src=app.get_asset_url('deshawn.jpeg'), style = {'width':'20%', 'textAlign': 'center'}) 
-
 markdown_text = '''
 The National Basketball Association (NBA), considered the premier league in the sport, was founded in 1949 when the Basketball Association of America (BAA) and the the National Basketball League (NBL) merged. In 1976, the NBA merged once again, this time with the competing, and equally as prestigious, American Basketball Association (ABA).
 Thanks to meticulous (although some might argue against that adjective) scorekeeping throughout basketball's history, we have statistics for the sport going back as far as 1946. While the scorekeeping and playstyle has evolved over the years, many of the main metrics (points, assists, rebounds, wins, losses, championships) have stayed the same.
@@ -129,8 +127,8 @@ app = dash.Dash(__name__)
 
 server = app.server  # Expose the server variable for deployment
 
-html.Img(src='https://cdn.vox-cdn.com/thumbor/lcu7Gz6yFvob2PIU7XljIQeDJOo=/0x0:3076x2204/1200x800/filters:focal(932x425:1424x917)/cdn.vox-cdn.com/uploads/chorus_image/image/54103205/80971280.0.jpg', 
-             style={'height': '400px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+    html.Img(src='/assets/deshawn.jpeg', 
+             style={'height': '300px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
 
 app.layout = html.Div([
     html.H1("NBA Dashboard", style={'text-align': 'center'}),
