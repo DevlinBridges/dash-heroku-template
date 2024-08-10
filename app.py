@@ -128,8 +128,7 @@ app = dash.Dash(__name__)
 server = app.server  # Expose the server variable for deployment
 
     html.H1("NBA Dashboard", style={'text-align': 'center'}),
-
-    html.Img(src='/assets/deshawn.jpeg', style={'height': '300px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+##  html.Img(src='/assets/deshawn.jpeg', style={'height': '300px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
     
     dcc.Markdown(markdown_text),
 
