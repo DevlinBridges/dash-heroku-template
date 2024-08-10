@@ -184,3 +184,6 @@ def update_variable_options(selected_visualization):
     
     # Return the new options for the variable-dropdown
     return [{'label': col, 'value': col} for col
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
