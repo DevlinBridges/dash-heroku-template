@@ -127,6 +127,8 @@ app = dash.Dash(__name__)
 
 server = app.server  # Expose the server variable for deployment
 
+# Define the layout properly with all components enclosed in a Div
+app.layout = html.Div([
     html.H1("NBA Dashboard", style={'text-align': 'center'}),
 
     html.Img(src='https://upload.wikimedia.org/wikipedia/commons/6/6b/DeShawn_Stevenson_2.jpg', 
@@ -181,40 +183,4 @@ def update_variable_options(selected_visualization):
         allowed_columns = []
     
     # Return the new options for the variable-dropdown
-    return [{'label': col, 'value': col} for col in allowed_columns]
-
-@app.callback(
-    Output('map', 'figure'),
-    [Input('visualization-dropdown', 'value'),
-     Input('variable-dropdown', 'value'),
-     Input('variable2-dropdown', 'value')]  # Third argument for second dropdown
-)
-def update_figure(selected_visualization, col1, col2):
-    if selected_visualization == 'countymap':
-        return countymap(col1)
-    elif selected_visualization == 'barchart':
-        return barchart(col1)
-    elif selected_visualization == 'scatter':
-        return scatter(col1, col2)  # Pass both columns
-    elif selected_visualization == 'scatter2':
-        return scatter2(col1, col2)  # Pass both columns
-    elif selected_visualization == 'table':
-        return table(col1)
-    else:
-        return countymap(col1)  # Default to county map if something goes wrong
-    
-@app.callback(
-    Output('variable2-dropdown', 'options'),
-    Input('visualization-dropdown', 'value')
-)
-def update_variable2_options(selected_visualization):
-    if selected_visualization in ['scatter','scatter2']:
-        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
-    else:
-        allowed_columns = []  # Just use an empty list if not scatter or scatter2
-    
-    # Return the new options for the variable-dropdown
-    return [{'label': col, 'value': col} for col in allowed_columns] or [{'label': 'N/A', 'value': 'N/A'}]
-    
-if __name__ == '__main__':
-    app.run_server(debug=True)
+    return [{'label': col, 'value': col} for col
