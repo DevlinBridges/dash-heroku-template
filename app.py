@@ -83,26 +83,27 @@ def scatter(col1, col2):
                      x='Championships',
                      y=col1,
                      trendline='ols',
-                     color=col2,
+                     color='Team',
+                     size=col2,
                      hover_data=['Team','Leading Scorer','MVPs','Finals MVPs'],
                      title='# of Championships Against...',
                      height=800, width=800)
-    fig.update_layout(showlegend=False)
+    fig.update_layout(showlegend=True)
     return fig
 
 def scatter2(col1, col2):
     fig = px.scatter(nba_info,
-                     x='Yrs Existed',
-                     y=col1,
+                     x=col1,
+                     y=col2,
                      trendline='ols',
                      color='Team',
                      color_continuous_scale='Turbo',
-                     size=col2,
+                     size='Championships',
                      hover_data=['Team','Leading Scorer','MVPs','Finals MVPs'],
-                     title='Age of Team Against...',
+                     title='',
                      height=800, width=800,
                      size_max=15)
-    fig.update_layout(showlegend=False)
+    fig.update_layout(showlegend=True)
     return fig
 
 def table(col1):
@@ -149,6 +150,12 @@ app.layout = html.Div([
         multi=False
     ),
 
+    dcc.Dropdown(
+        id='variable2-dropdown',  # Second dropdown for col2
+        value='Championships',  # Default value
+        multi=False
+    ),
+
     dcc.Graph(id='map')
 ])
 
@@ -158,13 +165,13 @@ app.layout = html.Div([
 )
 def update_variable_options(selected_visualization):
     if selected_visualization == 'countymap':
-        allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
+        allowed_columns = ['Championships', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections']
     elif selected_visualization == 'barchart':
         allowed_columns = ['Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed']
     elif selected_visualization == 'scatter':
-        allowed_columns = ['Team', 'Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships']
     elif selected_visualization == 'scatter2':
-        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships']
     else:
         allowed_columns = []
     
@@ -174,21 +181,35 @@ def update_variable_options(selected_visualization):
 @app.callback(
     Output('map', 'figure'),
     [Input('visualization-dropdown', 'value'),
-     Input('variable-dropdown', 'value')]
+     Input('variable-dropdown', 'value'),
+     Input('variable2-dropdown', 'value')]  # Third argument for second dropdown
 )
-def update_figure(selected_visualization, selected_variable):
+def update_figure(selected_visualization, col1, col2):
     if selected_visualization == 'countymap':
-        return countymap(selected_variable)
+        return countymap(col1)
     elif selected_visualization == 'barchart':
-        return barchart(selected_variable)
+        return barchart(col1)
     elif selected_visualization == 'scatter':
-        return scatter(selected_variable, selected_variable)
+        return scatter(col1, col2)  # Pass both columns
     elif selected_visualization == 'scatter2':
-        return scatter2(selected_variable, selected_variable)
+        return scatter2(col1, col2)  # Pass both columns
     elif selected_visualization == 'table':
-        return table(selected_variable)
+        return table(col1)
     else:
-        return countymap(selected_variable)  # Default to county map if something goes wrong
-
+        return countymap(col1)  # Default to county map if something goes wrong
+    
+@app.callback(
+    Output('variable2-dropdown', 'options'),
+    Input('visualization-dropdown', 'value')
+)
+def update_variable2_options(selected_visualization):
+    if selected_visualization in ['scatter','scatter2']:
+        allowed_columns = ['Founded', 'Points', 'MVPs', 'Finals MVPs', 'All-NBA First Team Selections', 'Yrs Existed', 'Championships', 'Finals MVPs']
+    else:
+        allowed_columns = []  # Just use an empty list if not scatter or scatter2
+    
+    # Return the new options for the variable-dropdown
+    return [{'label': col, 'value': col} for col in allowed_columns] or [{'label': 'N/A', 'value': 'N/A'}]
+    
 if __name__ == '__main__':
     app.run_server(debug=True)
