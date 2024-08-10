@@ -129,9 +129,10 @@ server = app.server  # Expose the server variable for deployment
 
 app.layout = html.Div([
     html.H1("NBA Dashboard", style={'text-align': 'center'}),
-
+    
     dcc.Markdown(markdown_text),
 
+    html.P("Select the type of visualization:", style={'font-weight': 'bold'}),
     dcc.Dropdown(
         id='visualization-dropdown',
         options=[
@@ -144,12 +145,14 @@ app.layout = html.Div([
         value='countymap'  # Default value
     ),
 
+    html.P("Select the first variable (for Scatterplot 1, this controls y-axis; for Scatterplot 2, this controls x-axis):", style={'font-weight': 'bold'}),
     dcc.Dropdown(
         id='variable-dropdown',
         value='Points',  # Default value
         multi=False
     ),
 
+    html.P("Select the first variable (for Scatterplot 1, this controls point size; for Scatterplot 2, this controls y-axis):", style={'font-weight': 'bold'}),
     dcc.Dropdown(
         id='variable2-dropdown',  # Second dropdown for col2
         value='Championships',  # Default value
