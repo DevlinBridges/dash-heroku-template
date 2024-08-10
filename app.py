@@ -185,8 +185,16 @@ app.layout = dbc.Container([
     ], justify='center', className="mb-4"),
 
     dbc.Row([
-        dbc.Col(html.Img(src='https://upload.wikimedia.org/wikipedia/commons/6/6b/DeShawn_Stevenson_2.jpg', 
-                         style={'height': '400px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}), width=12)
+        dbc.Col(html.Div([
+            html.Img(src='https://upload.wikimedia.org/wikipedia/commons/6/6b/DeShawn_Stevenson_2.jpg', 
+                     style={'height': '400px', 'width': 'auto', 'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+            html.P("Photo Credit: Wikimedia Commons", style={
+                'text-align': 'center',
+                'font-size': '12px',
+                'color': '#888',
+                'margin-top': '10px'
+            })
+        ]), width=12)
     ], justify='center', className="mb-4"),
 
     dbc.Row([
